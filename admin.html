@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SJT PAY - Admin Dashboard</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090909;color:white;font-family:Arial;padding:20px}
+h1,h2{color:#dfb957}
+.container{max-width:700px;margin:auto}
+.panel{background:#181818;padding:22px;border:1px solid #393939;border-radius:12px;margin:20px 0}
+input,select{width:100%;padding:13px;margin:8px 0 15px;background:#252525;color:white;border:1px solid #555;border-radius:6px}
+button{padding:12px 20px;background:#d6ad55;color:#111;border:0;border-radius:6px;font-weight:bold;cursor:pointer}
+.item{padding:14px;border-bottom:1px solid #444;overflow-wrap:anywhere}
+small{color:#aaa}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>SJT PAY — ADMIN</h1>
+<p><small>Personal Digital Store Management</small></p>
+
+<div class="panel">
+<h2>Add New Product</h2>
+<form id="productForm">
+<label>Product Name</label>
+<input id="name" required placeholder="Enter product name">
+
+<label>Category</label>
+<select id="category">
+<option>Ebook</option>
+<option>AI Videos</option>
+<option>Course</option>
+<option>Templates</option>
+<option>ZIP Bundle</option>
+<option>Other</option>
+</select>
+
+<label>Price (₹)</label>
+<input id="price" type="number" min="1" required placeholder="Enter price">
+
+<label>Product / Checkout Link</label>
+<input id="link" type="url" required placeholder="https://...">
+
+<button type="submit">Add Product</button>
+</form>
+</div>
+
+<div class="panel">
+<h2>My Products</h2>
+<div id="products">No products added yet.</div>
+</div>
+</div>
+
+<script>
+const key="sjtPayProducts";
+let products=JSON.parse(localStorage.getItem(key)||"[]");
+
+function render(){
+const box=document.getElementById("products");
+box.innerHTML="";
+if(!products.length){box.textContent="No products added yet.";return;}
+products.forEach((p,i)=>{
+const div=document.createElement("div");
+div.className="item";
+const title=document.createElement("strong");
+title.textContent=p.name;
+const detail=document.createElement("p");
+detail.textContent=p.category+" | ₹"+p.price;
+const link=document.createElement("a");
+link.href=p.link;link.textContent="Open product link";
+link.target="_blank";link.rel="noopener noreferrer";
+link.style.color="#dfb957";
+const del=document.createElement("button");
+del.textContent="Delete";
+del.style.marginLeft="12px";
+del.onclick=()=>{products.splice(i,1);save();};
+div.append(title,detail,link,del);
+box.appendChild(div);
+});
+}
+function save(){
+localStorage.setItem(key,JSON.stringify(products));
+render();
+}
+document.getElementById("productForm").addEventListener("submit",e=>{
+e.preventDefault();
+products.push({
+name:document.getElementById("name").value.trim(),
+category:document.getElementById("category").value,
+price:document.getElementById("price").value,
+link:document.getElementById("link").value.trim()
+});
+save();
+e.target.reset();
+});
+render();
+</script>
+</body>
+</html>
